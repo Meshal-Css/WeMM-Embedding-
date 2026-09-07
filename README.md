@@ -1,103 +1,133 @@
 # WeMM-Embedding
 
-مستودع لتجربة **نماذج الـ Embedding** متعددة الوسائط، وبناء مشروع عملي فوقها:
-**البحث داخل مقاطع الفيديو بلغة طبيعية**.
+A playground for **multimodal embedding models**, and a working project built on
+top of one: **searching inside video with natural language**.
 
-اكتب «سيارة بيضاء مرت على الطريق» فيرجع لك **الثانية** التي ظهرت فيها — بدون
-OCR، وبدون كشف أجسام، وبدون أي وسوم مُعدّة مسبقًا.
-
----
-
-## ما هو الـ Embedding؟
-
-فكرة واحدة تشرح كل شيء: **تحويل المعنى إلى أرقام**.
-
-```
-"القهوة العربية تُقدَّم مع التمر."  ──►  [0.069, 0.006, 0.029, ..., 0.010]
-                                              4096 رقمًا
-```
-
-هذه القائمة تُسمى **متجهًا (vector)**، وهي إحداثيات النص في «فضاء المعاني».
-النصوص المتقاربة معنويًا تقع قريبة من بعضها في هذا الفضاء، فتصبح المقارنة
-بينها عملية حسابية بسيطة (cosine similarity).
-
-**وما يميز WeMM تحديدًا:** أنه يضع **الصور والفيديو والنص في نفس الفضاء**.
-فيمكنك مقارنة جملة عربية بصورة مباشرة — وهذا أساس المشروع كله.
+Type *"a white car driving down the road"* and get back the **second** it appears —
+no OCR, no object detection, no pre-existing tags.
 
 ---
 
-## مثال حقيقي
+## What is an embedding?
 
-هذه صورة اختبار من المستودع، والنتائج أدناه ناتج تشغيل فعلي:
+One idea explains everything: **turning meaning into numbers**.
 
-![صورة اختبار](dataset/test-image.png)
+```
+"Arabic coffee is served with dates."  ──►  [0.069, 0.006, 0.029, ..., 0.010]
+                                                    4096 numbers
+```
 
-| الدرجة | الاستعلام | التقييم |
+That list is called a **vector**, and it is the text's coordinates in a "space of
+meaning". Texts that mean similar things land near each other in that space, so
+comparing them becomes simple arithmetic (cosine similarity).
+
+**What makes WeMM special:** it places **images, video, and text in the same
+space**. You can compare a sentence directly against an image — and that is the
+foundation of this entire project.
+
+---
+
+## A real example
+
+Below is a test image from this repo. The scores are from an actual run:
+
+![Test image](dataset/test-image.png)
+
+| Score | Query | Verdict |
 |---|---|---|
-| **0.5788** | `a modern residential building facade` | ✅ المحتوى الغالب في الصورة |
-| **0.5328** | `سيارات سوداء مصفوفة أمام مبنى` | ✅ صحيح |
-| **0.4208** | `وانيت أبيض واقف في الشارع` | ✅ موجود، لكنه تفصيل صغير |
-| **0.4201** | `a white pickup truck parked on the street` | ✅ نفس الجملة بالإنجليزية |
-| 0.2470 | `قطة تنام على أريكة` | ❌ غير موجود |
-| 0.0859 | `a snowy mountain landscape` | ❌ غير موجود إطلاقًا |
+| **0.5788** | `a modern residential building facade` | ✅ The dominant content |
+| **0.5328** | `سيارات سوداء مصفوفة أمام مبنى` (black cars lined up in front of a building) | ✅ Correct |
+| **0.4208** | `وانيت أبيض واقف في الشارع` (a white pickup parked on the street) | ✅ Present, but a small detail |
+| **0.4201** | `a white pickup truck parked on the street` | ✅ Same sentence, in English |
+| 0.2470 | `قطة تنام على أريكة` (a cat sleeping on a couch) | ❌ Not present |
+| 0.0859 | `a snowy mountain landscape` | ❌ Not present at all |
 
-**لاحظ السطرين الثالث والرابع:** نفس المعنى بلغتين مختلفتين، والفرق بينهما
-**0.0007 فقط**. الموديل لا يقارن الكلمات — يقارن المعنى.
+**Look at rows 3 and 4:** the same meaning in two different languages, and the gap
+between them is only **0.0007**. The model does not compare words — it compares
+meaning.
 
 ---
 
-## المشروع: البحث داخل الفيديو
+## The project: search inside a video
 
-### كيف يعمل
+### How it works
 
 ```
-🎥 الفيديو
-     │  PyAV — نستخرج إطارًا كل ثانية
+🎥 Video
+     │  PyAV — extract one frame per second
      ▼
-[t=0s] [t=1s] [t=2s] … [t=57s]          كل إطار صورة مستقلة موسومة بزمنها
-     │  WeMM — نرمّز كل إطار
+[t=0s] [t=1s] [t=2s] … [t=57s]          each frame is an image tagged with its time
+     │  WeMM — encode every frame
      ▼
- متجه 4096 لكل إطار
+ a 4096-d vector per frame
      │
-❓ "سيارة بيضاء مرت على الطريق" ──WeMM──► متجه
-     │  cosine بين الاستعلام وكل الإطارات
+❓ "a white car driving down the road" ──WeMM──► vector
+     │  cosine between the query and every frame
      ▼
- أعلى تطابق = الثانية 23  ← الجواب
+ best match = second 23  ← the answer
 ```
 
-### لماذا إطارات، وليس الفيديو كوحدة؟
+### Why frames instead of the whole video?
 
-ترميز الفيديو كاملًا ينتج **متجهًا واحدًا** لا يحمل أي معلومة زمنية: يخبرك أن
-الفيديو «عن سيارات» لكنه لا يخبرك **متى**. تحديد اللحظة يستلزم التقطيع.
+Encoding a whole video produces **a single vector** that carries no temporal
+information. It tells you the video is "about cars" but never **when**. Pinpointing
+a moment requires slicing it up.
 
 ---
 
-## المكتبات
+## Walkthrough
 
-| المكتبة | الدور |
+**1. Open the interface** — upload a clip and pick a frame rate.
+
+![Empty interface](dataset/ui-1-empty.png)
+
+**2. Index the clip** — frames are extracted and encoded. Here a 5-second clip
+produced 6 frames. The query below is Arabic: *"a white Nissan car"*.
+
+![Indexed clip](dataset/ui-2-indexed.png)
+
+**3. Search** — the Arabic query matched **second 4** with a score of **0.495**,
+and the gallery shows the matching frames so you can verify by eye.
+
+![Search results](dataset/ui-3-results.png)
+
+**4. Inspect a frame** — click any result to enlarge it. The white pickup truck is
+clearly there at `00:04`.
+
+![Matched frame](dataset/ui-4-frame.png)
+
+> Note the score: **0.495**. It found the right frame, but the value sits just
+> below the ~0.5 "strong match" line. Small objects in a wide aerial shot score
+> lower than scenes that fill the frame — always read the score, not just the rank.
+
+---
+
+## Libraries
+
+| Library | Role |
 |---|---|
-| `sentence-transformers` | تحميل الموديل وترميز النصوص والصور |
-| `transformers` | البنية الأساسية للموديل (Qwen3.5) |
-| `torch` | الحوسبة — يستخدم MPS على أبل سيليكون |
-| `qwen-vl-utils` | تجهيز مدخلات الصور والفيديو |
-| `av` (PyAV) | فك ترميز الفيديو — يحمل FFmpeg بداخله |
-| `gradio` | واجهة الويب |
-| `numpy` / `scikit-learn` | حساب التشابه |
+| `sentence-transformers` | Loads the model, encodes text and images |
+| `transformers` | The underlying model architecture (Qwen3.5) |
+| `torch` | Compute — uses MPS on Apple Silicon |
+| `qwen-vl-utils` | Prepares image and video inputs |
+| `av` (PyAV) | Video decoding — ships FFmpeg inside the wheel |
+| `gradio` | Web interface |
+| `numpy` / `scikit-learn` | Similarity math |
 
-**الموديل:** [`tencent/WeMM-Embedding-9B`](https://huggingface.co/tencent/WeMM-Embedding-9B)
-— مبني على Qwen3.5-9B، يخرج متجهًا مطبّعًا بطول 4096، ويقبل نصًا وصورًا وفيديو.
-حجم التحميل ~17.5GB (يُنزّل تلقائيًا في أول تشغيل).
+**Model:** [`tencent/WeMM-Embedding-9B`](https://huggingface.co/tencent/WeMM-Embedding-9B)
+— built on Qwen3.5-9B, outputs a normalized 4096-d vector, accepts text, images,
+and video. Download size ~17.5 GB, fetched automatically on first run.
 
-> نسخ أخف متاحة إن كانت مواردك محدودة: `WeMM-Embedding-2B` و `-4B`.
+> Lighter variants exist if resources are tight: `WeMM-Embedding-2B` and `-4B`.
 
 ---
 
-## التشغيل
+## Setup and running
 
-### 1. تجهيز البيئة
+### 1. Environment
 
-يتطلب **Python 3.10+**. نستخدم [uv](https://docs.astral.sh/uv/) لأنه لا يحتاج
-صلاحيات إدارية:
+Requires **Python 3.10+**. We use [uv](https://docs.astral.sh/uv/) because it needs
+no admin rights:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -107,73 +137,75 @@ uv pip install -r requirements.txt
 uv pip install -r project/requirements.txt
 ```
 
-### 2. تشغيل واجهة البحث في الفيديو
+### 2. Launch the video search interface
 
 ```bash
 ./project/run.sh
 ```
 
-تفتح الواجهة على `http://127.0.0.1:7860`.
+Opens at `http://127.0.0.1:7860`.
 
-**الخطوات:** ارفع مقطعًا ← اضغط **Index clip** وانتظر شريط التقدم ← اكتب وصف
-المشهد ← **Search**. الفهرسة تتم مرة واحدة، وبعدها كل بحث يرجع في أقل من نصف ثانية.
+**Steps:** upload a clip → click **Index clip** and wait for the progress bar →
+describe the scene → **Search**. Indexing happens once; every search after that
+returns in under half a second.
 
-> ⚠️ اترك الطرفية مفتوحة — الخادم يعيش داخلها. إغلاقها يعطيك
-> `ERR_CONNECTION_REFUSED` في المتصفح.
+> ⚠️ Keep the terminal open — the server lives inside it. Closing it gives you
+> `ERR_CONNECTION_REFUSED` in the browser.
 
-### 3. تجربة الـ embedding وحده
+### 3. Try embeddings on their own
 
 ```bash
 .venv/bin/python scripts/run_benchmark.py --provider wemm --model tencent/WeMM-Embedding-9B
 ```
 
-أو افتح الدفتر التفاعلي `notebooks/wemm_playground.ipynb` للّعب خطوة بخطوة.
+Or open `notebooks/wemm_playground.ipynb` for a hands-on, step-by-step tour.
 
 ---
 
-## البنية
+## Structure
 
 ```
 WeMM-Embedding/
-├── src/providers/          # wrapper لكل مزود embedding
-│   ├── wemm_embed.py       #   WeMM — نصوص وصور وفيديو
-│   ├── hf_embed.py         #   sentence-transformers عام
-│   └── ollama_embed.py     #   موديلات Ollama المحلية
-├── src/compare.py          # cosine similarity وترتيب النتائج
-├── project/                # 🎬 مشروع البحث داخل الفيديو
-│   ├── video_search.py     #   استخراج الإطارات + الترميز + البحث
-│   ├── app.py              #   واجهة Gradio
-│   └── run.sh              #   مشغّل بمسارات مطلقة
-├── notebooks/              # دفتر تفاعلي للتعلّم
-├── dataset/                # صور اختبار
+├── src/providers/          # one wrapper per embedding provider
+│   ├── wemm_embed.py       #   WeMM — text, images, video
+│   ├── hf_embed.py         #   generic sentence-transformers
+│   └── ollama_embed.py     #   local Ollama models
+├── src/compare.py          # cosine similarity and ranking
+├── project/                # 🎬 the video search project
+│   ├── video_search.py     #   frame extraction + encoding + search
+│   ├── app.py              #   Gradio interface
+│   └── run.sh              #   launcher with absolute paths
+├── notebooks/              # interactive learning notebook
+├── dataset/                # test images and screenshots
 └── scripts/run_benchmark.py
 ```
 
 ---
 
-## ملاحظات عملية
+## Practical notes
 
-**الأداء** (على Apple M5 Max): تحميل الموديل ~13s مرة واحدة، ثم ~0.37s لترميز
-كل إطار. دقيقة فيديو بمعدل إطار/ثانية ≈ 22 ثانية فهرسة.
+**Performance** (Apple M5 Max): ~13 s to load the model once, then ~0.37 s to
+encode each frame. One minute of video at 1 fps ≈ 22 s of indexing.
 
-**معدل الإطارات** هو المقايضة الأساسية. الافتراضي إطار كل ثانية — لكن **سيارة
-تمر بسرعة قد تظهر أقل من ثانية وتُفوَّت**. ارفعه إلى 2 أو 4 للمشاهد السريعة.
+**Frame rate is the core trade-off.** The default is one frame per second — but
+**a fast-moving car may appear for less than a second and be missed entirely**.
+Raise it to 2 or 4 for quick scenes.
 
-**اقرأ الدرجة لا الترتيب.** النظام يرجّع دائمًا أفضل النتائج حتى لو لم يكن
-المشهد موجودًا أصلًا. من التجارب أعلاه: فوق **0.5** تطابق قوي، وتحت **0.30**
-غالبًا لا وجود للمشهد.
+**Read the score, not the rank.** The system always returns its best matches, even
+when the scene is absent. From the runs above: above **0.5** is a strong match,
+below **0.30** usually means it is not there.
 
-**الوصف التفصيلي أدق.** «سيارة» وحدها إشارة ضعيفة، بينما «سيارة بيضاء تمر على
-طريق إسفلتي» تعطي نتيجة أفضل بكثير.
+**Detailed descriptions work better.** "car" alone is a weak signal; "a white car
+driving down an asphalt road" performs noticeably better.
 
-**فك ترميز الفيديو على macOS:** المكتبتان `decord` و `torchcodec` لا تعملان
-على أبل سيليكون بدون تبعيات نظام إضافية، لذلك نعتمد على `PyAV` الذي يحمل
-FFmpeg بداخله.
+**Video decoding on macOS:** `decord` and `torchcodec` do not work on Apple Silicon
+without extra system dependencies, so this project uses `PyAV`, which bundles
+FFmpeg.
 
 ---
 
-## الترخيص والاستخدام
+## License and usage
 
-الموديل من Tencent وله ترخيصه الخاص — راجع
-[صفحته على Hugging Face](https://huggingface.co/tencent/WeMM-Embedding-9B).
-هذا المستودع للتجارب الشخصية والتعلّم.
+The model comes from Tencent under its own license — see
+[its Hugging Face page](https://huggingface.co/tencent/WeMM-Embedding-9B).
+This repository is for personal experimentation and learning.
