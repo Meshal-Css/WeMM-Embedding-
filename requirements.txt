@@ -1,0 +1,20 @@
+# أساسيات المقارنة والتشغيل
+numpy
+python-dotenv
+scikit-learn
+tqdm
+
+# مزود Ollama المحلي
+ollama
+
+# مزودو Hugging Face / WeMM-Embedding
+torch
+torchvision
+transformers==5.2.0
+sentence-transformers>=5.7.0
+accelerate>=1.1.0
+
+# معالجة الصور/الفيديو لمدخلات WeMM المتعددة الوسائط.
+# decord ما له wheel لـ macOS arm64، فنتركه لغير macOS ونعتمد على PyAV هناك.
+qwen-vl-utils[decord]==0.0.14; sys_platform != "darwin"
+qwen-vl-utils==0.0.14; sys_platform == "darwin"

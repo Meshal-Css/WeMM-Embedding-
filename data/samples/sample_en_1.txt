@@ -1,0 +1,1 @@
+Embedding models convert text into numerical vectors that capture semantic meaning, allowing similarity search and retrieval-augmented generation.

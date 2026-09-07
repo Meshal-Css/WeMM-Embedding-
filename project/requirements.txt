@@ -1,0 +1,4 @@
+# يعتمد على بيئة المستودع الأساسية (../requirements.txt) بالإضافة إلى:
+gradio
+av          # فك ترميز الفيديو — يحمل FFmpeg بداخله، بعكس decord/torchcodec
+pillow

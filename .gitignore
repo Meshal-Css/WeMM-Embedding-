@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Env / secrets
+.env
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data / experiment outputs
+data/raw/
+data/embeddings_cache/
+*.npy
+*.faiss
+*.index
+
+# IDE
+.vscode/
+.idea/
+
+# Video / Gradio
+*.mp4
+*.mov
+*.avi
+gradio_cached_examples/
+flagged/
