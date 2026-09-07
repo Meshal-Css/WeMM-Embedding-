@@ -13,19 +13,19 @@ from pathlib import Path
 
 import gradio as gr
 
-# نضيف مجلد المشروع لمسار الاستيراد عشان يشتغل من أي مجلد تشغّله منه.
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from video_search import extract_frames, encode_frames, search, format_timestamp  # noqa: E402
 
 CSS = """
-/* يحاذي حسب لغة ما يكتبه المستخدم — الاستعلام يقبل العربية والإنجليزية. */
+/* Align to whatever language is typed — queries accept Arabic and English. */
 .auto-dir textarea, .auto-dir input { unicode-bidi: plaintext; }
 footer { display: none !important; }
 """
 
 
 def index_video(video_path, fps, progress=gr.Progress()):
-    """يستخرج الإطارات ويرمّزها. يرجع الحالة + رسالة."""
+    """Extract and encode the frames. Returns the state plus a status message."""
     if not video_path:
         return None, None, "⚠️ Upload a video first."
 
@@ -45,7 +45,7 @@ def index_video(video_path, fps, progress=gr.Progress()):
 
 
 def run_search(query, frames, vectors, top_k):
-    """يبحث عن اللحظات المطابقة ويرجع معرضًا + جدولًا."""
+    """Find matching moments and return a gallery plus a table."""
     if frames is None or vectors is None:
         return [], "⚠️ Index the video first."
     if not query or not query.strip():
