@@ -1,5 +1,6 @@
 import numpy as np
-from src.compare import similarity_matrix, most_similar
+
+from src.compare import most_similar, similarity_matrix
 
 
 def test_similarity_matrix_shape():
@@ -18,6 +19,7 @@ def test_most_similar_finds_identical_vector():
 
 def test_wemm_rejects_unknown_mode():
     import pytest
+
     from src.providers import wemm_embed
 
     with pytest.raises(ValueError, match="mode"):
@@ -25,7 +27,7 @@ def test_wemm_rejects_unknown_mode():
 
 
 def test_wemm_registered_as_provider():
-    from src.providers import get_provider, PROVIDERS
+    from src.providers import PROVIDERS, get_provider
 
     assert "wemm" in PROVIDERS
     assert get_provider("wemm") is not None

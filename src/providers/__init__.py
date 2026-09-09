@@ -1,7 +1,8 @@
 """
 سجل المزودين المتاحين. أضف أي مزود جديد هنا بعد إنشاء ملفه.
 """
-from . import ollama_embed, hf_embed, wemm_embed
+
+from . import hf_embed, ollama_embed, wemm_embed
 
 PROVIDERS = {
     "ollama": ollama_embed.embed,

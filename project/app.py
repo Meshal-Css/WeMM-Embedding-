@@ -3,19 +3,22 @@ Natural-language search inside a video.
 
 Run it: project/run.sh
 """
+
 from __future__ import annotations
 
-import warnings, logging
-warnings.filterwarnings("ignore"); logging.disable(logging.WARNING)
+import logging
+import warnings
+
+warnings.filterwarnings("ignore")
+logging.disable(logging.WARNING)
 
 import sys
 from pathlib import Path
 
 import gradio as gr
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from video_search import extract_frames, encode_frames, search, format_timestamp  # noqa: E402
+from video_search import encode_frames, extract_frames, format_timestamp, search  # noqa: E402
 
 CSS = """
 /* Align to whatever language is typed — queries accept Arabic and English. */
@@ -38,9 +41,13 @@ def index_video(video_path, fps, progress=gr.Progress()):
     vectors = encode_frames(frames, progress=lambda p: progress(p, desc="Encoding frames…"))
 
     duration = frames[-1].time_s
-    return frames, vectors, (
-        f"✅ Ready — {len(frames)} frames covering {format_timestamp(duration)} "
-        f"(one frame every {1/fps:.1f}s). Describe your scene below."
+    return (
+        frames,
+        vectors,
+        (
+            f"✅ Ready — {len(frames)} frames covering {format_timestamp(duration)} "
+            f"(one frame every {1 / fps:.1f}s). Describe your scene below."
+        ),
     )
 
 
@@ -80,14 +87,24 @@ with gr.Blocks(title="Video Scene Search", css=CSS, theme=gr.themes.Soft()) as d
     with gr.Row():
         with gr.Column(scale=1):
             video = gr.Video(label="Clip", height=280)
-            fps = gr.Slider(0.25, 4, value=1, step=0.25, label="Frames per second",
-                            info="Higher = finer timing, slower indexing")
+            fps = gr.Slider(
+                0.25,
+                4,
+                value=1,
+                step=0.25,
+                label="Frames per second",
+                info="Higher = finer timing, slower indexing",
+            )
             index_btn = gr.Button("① Index clip", variant="primary")
             status = gr.Markdown("")
 
         with gr.Column(scale=1):
-            query = gr.Textbox(label="② Describe the scene", elem_classes="auto-dir", lines=2,
-                               placeholder="a white car driving down the road")
+            query = gr.Textbox(
+                label="② Describe the scene",
+                elem_classes="auto-dir",
+                lines=2,
+                placeholder="a white car driving down the road",
+            )
             top_k = gr.Slider(1, 10, value=5, step=1, label="Number of results")
             search_btn = gr.Button("🔍 Search", variant="primary")
             table = gr.Markdown("")
