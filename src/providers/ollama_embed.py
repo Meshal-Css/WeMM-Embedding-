@@ -2,7 +2,9 @@
 Wrapper بسيط لتوليد embeddings عبر Ollama المحلي.
 يتطلب: ollama يشتغل محليًا + موديل embedding مسحوب مسبقًا (مثال: nomic-embed-text).
 """
+
 import os
+
 import ollama
 
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")

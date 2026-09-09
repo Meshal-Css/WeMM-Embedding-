@@ -12,6 +12,7 @@ Wrapper لتوليد embeddings عبر WeMM-Embedding (Tencent) على sentence-
   أبقيناه لأنه واجهة sentence-transformers الرسمية، ويصير فعّالًا لو سجّل
   المزوّد قوالب في إصدار لاحق. تحقق بنفسك عبر: load_model().prompts
 """
+
 import os
 
 import torch

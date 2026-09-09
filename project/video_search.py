@@ -9,6 +9,7 @@ gives us the closest frame — and its timestamp is the answer.
 We decode with PyAV because it bundles FFmpeg, unlike decord and torchcodec,
 which need system libraries unavailable on macOS without Homebrew.
 """
+
 from __future__ import annotations
 
 import sys
@@ -29,6 +30,7 @@ MAX_SIDE = 448
 @dataclass
 class Frame:
     """A single frame together with its timestamp in seconds."""
+
     time_s: float
     image: Image.Image
 
@@ -80,8 +82,13 @@ def encode_frames(frames: list[Frame], batch_size: int = 8, progress=None) -> np
     return np.vstack(vectors)
 
 
-def search(query: str, frame_vectors: np.ndarray, frames: list[Frame], top_k: int = 5,
-           min_gap_s: float = 2.0) -> list[tuple[float, float, Image.Image]]:
+def search(
+    query: str,
+    frame_vectors: np.ndarray,
+    frames: list[Frame],
+    top_k: int = 5,
+    min_gap_s: float = 2.0,
+) -> list[tuple[float, float, Image.Image]]:
     """
     Return the best top_k moments as (timestamp, score, frame).
 
