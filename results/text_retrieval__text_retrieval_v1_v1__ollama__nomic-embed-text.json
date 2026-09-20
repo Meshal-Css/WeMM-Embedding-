@@ -1,0 +1,241 @@
+{
+  "task": "text_retrieval",
+  "run_at": "2026-09-10T08:49:28+00:00",
+  "system": {
+    "id": "ollama:nomic-embed-text",
+    "provider": "ollama",
+    "model": "nomic-embed-text",
+    "query_prefix": "search_query: ",
+    "doc_prefix": "search_document: ",
+    "max_tokens": 2048
+  },
+  "dataset": {
+    "name": "text_retrieval_v1",
+    "version": 1,
+    "docs": 12,
+    "queries": 8,
+    "max_recall@1": 0.6042,
+    "max_recall@3": 1.0,
+    "max_recall@5": 1.0
+  },
+  "dim": 768,
+  "metrics": {
+    "success@1": 0.25,
+    "success@3": 0.75,
+    "success@5": 1.0,
+    "recall@1": 0.125,
+    "recall@3": 0.3542,
+    "recall@5": 0.6042,
+    "mrr": 0.5354,
+    "ndcg@5": 0.4275
+  },
+  "timing": {
+    "device_hint": "Darwin-arm64",
+    "warmup_seconds": 0.273,
+    "docs_seconds": 0.11,
+    "queries_seconds": 0.047,
+    "ms_per_text": 7.9
+  },
+  "warnings": [],
+  "per_query": [
+    {
+      "id": "q01",
+      "lang": "ar",
+      "text": "كيف أشتري بيت بالتقسيط؟",
+      "relevant": [
+        "d01",
+        "d02"
+      ],
+      "top5": [
+        "d03",
+        "d01",
+        "d07",
+        "d04",
+        "d06"
+      ],
+      "first_relevant_rank": 2,
+      "mrr": 0.5,
+      "ndcg@5": 0.3869,
+      "success@1": 0.0,
+      "recall@1": 0.0,
+      "success@3": 1.0,
+      "recall@3": 0.5,
+      "success@5": 1.0,
+      "recall@5": 0.5
+    },
+    {
+      "id": "q02",
+      "lang": "en",
+      "text": "paying for a house over many years",
+      "relevant": [
+        "d01",
+        "d02"
+      ],
+      "top5": [
+        "d02",
+        "d05",
+        "d08",
+        "d11",
+        "d12"
+      ],
+      "first_relevant_rank": 1,
+      "mrr": 1.0,
+      "ndcg@5": 0.6131,
+      "success@1": 1.0,
+      "recall@1": 0.5,
+      "success@3": 1.0,
+      "recall@3": 0.5,
+      "success@5": 1.0,
+      "recall@5": 0.5
+    },
+    {
+      "id": "q03",
+      "lang": "ar",
+      "text": "كيف أخفّض فاتورة الكهرباء في البيت؟",
+      "relevant": [
+        "d07",
+        "d08",
+        "d09"
+      ],
+      "top5": [
+        "d03",
+        "d07",
+        "d12",
+        "d04",
+        "d10"
+      ],
+      "first_relevant_rank": 2,
+      "mrr": 0.5,
+      "ndcg@5": 0.2961,
+      "success@1": 0.0,
+      "recall@1": 0.0,
+      "success@3": 1.0,
+      "recall@3": 0.3333,
+      "success@5": 1.0,
+      "recall@5": 0.3333
+    },
+    {
+      "id": "q04",
+      "lang": "ar",
+      "text": "هل أقدر أفسخ العقد قبل نهاية المدة؟",
+      "relevant": [
+        "d04",
+        "d05"
+      ],
+      "top5": [
+        "d01",
+        "d07",
+        "d04",
+        "d09",
+        "d10"
+      ],
+      "first_relevant_rank": 3,
+      "mrr": 0.3333,
+      "ndcg@5": 0.3066,
+      "success@1": 0.0,
+      "recall@1": 0.0,
+      "success@3": 1.0,
+      "recall@3": 0.5,
+      "success@5": 1.0,
+      "recall@5": 0.5
+    },
+    {
+      "id": "q05",
+      "lang": "en",
+      "text": "insulation and cooling cost",
+      "relevant": [
+        "d07",
+        "d08"
+      ],
+      "top5": [
+        "d08",
+        "d05",
+        "d02",
+        "d11",
+        "d12"
+      ],
+      "first_relevant_rank": 1,
+      "mrr": 1.0,
+      "ndcg@5": 0.6131,
+      "success@1": 1.0,
+      "recall@1": 0.5,
+      "success@3": 1.0,
+      "recall@3": 0.5,
+      "success@5": 1.0,
+      "recall@5": 0.5
+    },
+    {
+      "id": "q06",
+      "lang": "ar",
+      "text": "كيف تفهم الآلة أن جملتين متشابهتين بالمعنى؟",
+      "relevant": [
+        "d10",
+        "d11"
+      ],
+      "top5": [
+        "d03",
+        "d10",
+        "d07",
+        "d01",
+        "d12"
+      ],
+      "first_relevant_rank": 2,
+      "mrr": 0.5,
+      "ndcg@5": 0.3869,
+      "success@1": 0.0,
+      "recall@1": 0.0,
+      "success@3": 1.0,
+      "recall@3": 0.5,
+      "success@5": 1.0,
+      "recall@5": 0.5
+    },
+    {
+      "id": "q07",
+      "lang": "ar",
+      "text": "من يدفع تكلفة إصلاح العقار المؤجر؟",
+      "relevant": [
+        "d06"
+      ],
+      "top5": [
+        "d01",
+        "d09",
+        "d04",
+        "d07",
+        "d06"
+      ],
+      "first_relevant_rank": 5,
+      "mrr": 0.2,
+      "ndcg@5": 0.3869,
+      "success@1": 0.0,
+      "recall@1": 0.0,
+      "success@3": 0.0,
+      "recall@3": 0.0,
+      "success@5": 1.0,
+      "recall@5": 1.0
+    },
+    {
+      "id": "q08",
+      "lang": "en",
+      "text": "combining keyword and semantic search",
+      "relevant": [
+        "d12"
+      ],
+      "top5": [
+        "d11",
+        "d07",
+        "d09",
+        "d12",
+        "d01"
+      ],
+      "first_relevant_rank": 4,
+      "mrr": 0.25,
+      "ndcg@5": 0.4307,
+      "success@1": 0.0,
+      "recall@1": 0.0,
+      "success@3": 0.0,
+      "recall@3": 0.0,
+      "success@5": 1.0,
+      "recall@5": 1.0
+    }
+  ]
+}
