@@ -1,0 +1,120 @@
+name: text_retrieval_v1
+description: >
+  Bilingual retrieval set. Each query has known-relevant documents.
+  Includes cross-lingual pairs (Arabic query, English document) because the
+  product accepts both languages. Small on purpose - grow it, don't replace it.
+version: 1
+
+corpus:
+  # --- Mortgage / real-estate finance ---
+  - id: d01
+    lang: ar
+    text: >
+      يتيح التمويل العقاري للمشتري سداد قيمة المسكن على أقساط شهرية ممتدة
+      لسنوات، مقابل رهن العقار لصالح جهة التمويل حتى سداد كامل المبلغ.
+  - id: d02
+    lang: en
+    text: >
+      A mortgage lets a buyer pay for a home in monthly instalments over many
+      years. The property is pledged to the lender until the balance is cleared.
+  - id: d03
+    lang: ar
+    text: >
+      تختلف نسبة الدفعة الأولى المطلوبة باختلاف نوع التمويل وعمر المقترض،
+      وترتفع كلما زادت مخاطر التعثر المتوقعة.
+
+  # --- Lease agreements ---
+  - id: d04
+    lang: ar
+    text: >
+      ينص عقد الإيجار على مدة محددة وقيمة إيجارية وآلية التجديد. ولا يجوز
+      لأي طرف إنهاؤه قبل انتهاء المدة إلا وفق الشروط المتفق عليها.
+  - id: d05
+    lang: en
+    text: >
+      A lease agreement states a fixed term, a rent amount, and renewal terms.
+      Early termination is only allowed under the conditions both parties agreed.
+  - id: d06
+    lang: ar
+    text: >
+      يلتزم المستأجر بالمحافظة على العين المؤجرة، ويتحمل المالك الإصلاحات
+      الجوهرية ما لم يتفق الطرفان على غير ذلك.
+
+  # --- Energy efficiency ---
+  - id: d07
+    lang: ar
+    text: >
+      يقلل العزل الحراري الجيد للجدران والأسقف استهلاك التكييف بنسبة ملحوظة،
+      وينعكس مباشرة على قيمة فاتورة الكهرباء الشهرية.
+  - id: d08
+    lang: en
+    text: >
+      Proper wall and roof insulation cuts air-conditioning load significantly
+      and shows up directly as a lower monthly electricity bill.
+  - id: d09
+    lang: ar
+    text: >
+      يساعد الزجاج المزدوج على تقليل انتقال الحرارة من النوافذ، وهو من أكثر
+      مصادر الفقد الحراري في المباني السكنية.
+
+  # --- Vector search ---
+  - id: d10
+    lang: ar
+    text: >
+      تحوّل نماذج التضمين النص إلى متجه عددي، بحيث تقترب المعاني المتشابهة
+      في الفضاء المتجهي حتى لو اختلفت الألفاظ تماماً.
+  - id: d11
+    lang: en
+    text: >
+      Embedding models turn text into numeric vectors so that similar meanings
+      land close together, even when the wording shares no words at all.
+  - id: d12
+    lang: ar
+    text: >
+      يجمع البحث الهجين بين المطابقة اللفظية والبحث الدلالي، ويُدمج الترتيبان
+      عادةً بخوارزمية RRF للحصول على نتيجة أفضل من كليهما منفردين.
+
+queries:
+  - id: q01
+    lang: ar
+    text: كيف أشتري بيت بالتقسيط؟
+    relevant: [d01, d02]
+    note: no lexical overlap with the documents - a genuine semantic test
+
+  - id: q02
+    lang: en
+    text: paying for a house over many years
+    relevant: [d01, d02]
+    note: English query, Arabic document among the answers - cross-lingual
+
+  - id: q03
+    lang: ar
+    text: كيف أخفّض فاتورة الكهرباء في البيت؟
+    relevant: [d07, d08, d09]
+
+  - id: q04
+    lang: ar
+    text: هل أقدر أفسخ العقد قبل نهاية المدة؟
+    relevant: [d04, d05]
+    note: must not confuse lease with mortgage - both are "contracts"
+
+  - id: q05
+    lang: en
+    text: insulation and cooling cost
+    relevant: [d07, d08]
+
+  - id: q06
+    lang: ar
+    text: كيف تفهم الآلة أن جملتين متشابهتين بالمعنى؟
+    relevant: [d10, d11]
+
+  - id: q07
+    lang: ar
+    text: من يدفع تكلفة إصلاح العقار المؤجر؟
+    relevant: [d06]
+    note: single correct answer - makes Recall@1 meaningful
+
+  - id: q08
+    lang: en
+    text: combining keyword and semantic search
+    relevant: [d12]
